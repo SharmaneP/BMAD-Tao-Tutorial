@@ -1,0 +1,57 @@
+!------------------------ General Init ----------------------- the format under fortran that is used here is namelist (starts at & and ends at /) this entire code uses namelist format
+!-------------------------------------------------------------
+
+&tao_start  				!namelist name is tao_start
+  startup_file = 'setup.tao'   		!parameter startup file is assigned value of 'setup.tao' which is a 1 line optimization. this is an !alias (we assign a commonly used command to a file. here it is .opt which is optimization) just helpful
+/
+
+&tao_design_lattice        !namelist name is tao design lattice
+  n_universes = 1     !default no. of universes is 1
+  design_lattice(1)%file = "lat.bmad"   !that 1 universe is called lat.bmad which is a design lattice
+/
+
+&tao_plot_page
+  plot_page%size = 500, 400  		!dimensions of plot window
+  place(1) = 'layout', 'lat_layout'  	!
+  place(2) = 'r12', 'beta'   		!In floor plan r12 sect. is beta plot
+  place(3) = 'r22', 'key'    		! in floor plan r22 sect. is key plot
+/
+
+!------------------------ Data ------------------------------- tells what data will contribute to the merit function
+!-------------------------------------------------------------
+
+&tao_d2_data
+  d2_data%name = 'twiss'  		!this d2 branch is named a twiss parameter. From reading the next two sections we'll basically understand the there is a twiss parameter a and b.
+  n_d1_data = 2  			!saying there are 2 d1 branches under d2 parent branch.
+/
+
+&tao_d1_data    !the first d1
+  ix_d1_data = 1  			!we are referring to the 1st d1
+  d1_data%name = 'a'        !the name of the first d1 data. it has two indexes
+  datum(1) =  'beta.a'     '' '' 'END'   'target'  12.0   1e1  		! index 1= datum1
+  datum(2) =  'alpha.a'    '' '' 'END'   'target' -0.4    1e2   	!index 2=datum 2. what do these end elements mean?
+/
+
+&tao_d1_data        !the first d1
+  ix_d1_data = 2    !we are referring to the 2nd d1
+  d1_data%name = 'b'  !the name of the second d1 data. it also has two indexes   
+  datum(1) =  'beta.b'     '' '' 'END'   'target'  12.0   1e1
+  datum(2) =  'alpha.b'    '' '' 'END'   'target' -0.4    1e2  		!target value is -0.4
+/
+
+!------------------------ Variables --------------------------
+!-------------------------------------------------------------
+
+&tao_var
+  v1_var%name = 'quad'
+  search_for_lat_eles = 'Quad::*'  	!finding all the quad elements (because there are 6 quadrupole magnets Q1:Q6)
+  default_step = 1e-4  		 	!play around with these for the merit function. this is how many times we take derivative
+  default_attribute = 'k1'   		!quadrupole strengths
+  default_merit_type = 'limit'  	!already defined as delta V
+  default_low_lim = -50   		!in equation from sec.19.5 tao manual this equations shows up in the merit function
+  default_high_lim = 50  		!
+  default_weight = 1     		!sets the values of w_i in the merit function
+  ix_min_var = 1   			!min. value of index to be 1 is what we're saying. We won't look before the position 1.
+  default_key_delta = 1e-2   		!?
+  default_key_bound = T    		!?
+/
